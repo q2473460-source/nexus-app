@@ -1,0 +1,9 @@
+{
+  "projectId": "73225433",
+  "functions": {
+    "reset-password": {
+      "hasChanged": false,
+      "hash": "c096ee1adb6bdbefe9ec93f6a4fc2ae4e42699dcaa3efc41b9579b331c7076a6"
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Waypoints, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
+import PasswordResetModal from '@/components/PasswordResetModal';
 
 type Mode = 'signin' | 'signup';
 
@@ -12,6 +13,7 @@ export default function AuthScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showReset, setShowReset] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -169,12 +171,24 @@ export default function AuthScreen() {
               <>이미 계정이 있으신가요? <span className="font-semibold text-white">로그인</span></>
             )}
           </button>
+
+          {mode === 'signin' && (
+            <button
+              type="button"
+              onClick={() => setShowReset(true)}
+              className="w-full text-sm text-gray-400 hover:text-gray-200 transition pt-1"
+            >
+              비밀번호를 잊으셨나요? <span className="font-semibold text-white\">비밀번호 재설정</span>
+            </button>
+          )}
         </form>
 
         <p className="text-center text-white/30 text-xs mt-6 flex items-center justify-center gap-1">
           <Lock className="w-3 h-3" /> 안전하게 암호화되어 보관됩니다
         </p>
       </div>
+
+      {showReset && <PasswordResetModal onClose={() => setShowReset(false)} />}
     </div>
   );
 }
