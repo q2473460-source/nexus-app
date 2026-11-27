@@ -374,7 +374,7 @@ export default function ChatRoom({ room, onBack, onRoomUpdated }: ChatRoomProps)
                     </div>
                   )}
                   <div
-                    className={`flex ${mine ? 'justify-end' : 'justify-start'} relative group`}
+                    className={`flex flex-col ${mine ? 'items-end' : 'items-start'} relative group`}
                     onContextMenu={(e) => {
                       e.preventDefault();
                       setPickerFor(msg.id);
@@ -411,7 +411,7 @@ export default function ChatRoom({ room, onBack, onRoomUpdated }: ChatRoomProps)
                     </div>
                     <button
                       onClick={() => setPickerFor(pickerFor === msg.id ? null : msg.id)}
-                      className="opacity-0 group-hover:opacity-100 focus:opacity-100 self-center ml-1 w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-500 text-xs shrink-0 transition"
+                      className="opacity-0 group-hover:opacity-100 focus:opacity-100 w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-500 text-xs shrink-0 transition mt-0.5"
                       aria-label="공감 추가"
                     >
                       😊
@@ -448,7 +448,7 @@ export default function ChatRoom({ room, onBack, onRoomUpdated }: ChatRoomProps)
                     </div>
                   )}
                   {(reactions[msg.id] ?? []).length > 0 && (
-                    <div className={`relative -mt-1.5 z-10 flex flex-wrap gap-1 ${mine ? 'justify-end pr-2' : 'justify-start pl-2'}`}>
+                    <div className={`relative z-10 flex flex-wrap gap-1 mt-1 ${mine ? 'justify-end' : 'justify-start'}`}>
                       {(reactions[msg.id] ?? []).map((r) => (
                         <button
                           key={r.emoji}
