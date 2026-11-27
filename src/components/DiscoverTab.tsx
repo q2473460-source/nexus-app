@@ -52,11 +52,13 @@ export default function DiscoverTab({
     };
   }, [loadData]);
 
-  const filtered = rooms.filter(
-    (room) =>
-      room.title.toLowerCase().includes(query.toLowerCase()) ||
-      (room.description ?? '').toLowerCase().includes(query.toLowerCase())
-  );
+  const filtered = query.trim()
+    ? rooms.filter(
+        (room) =>
+          room.title.toLowerCase().includes(query.toLowerCase()) ||
+          (room.description ?? '').toLowerCase().includes(query.toLowerCase())
+      )
+    : rooms.filter((room) => joinedIds.has(room.id));
 
   return (
     <div className="pb-20">
@@ -68,7 +70,7 @@ export default function DiscoverTab({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="채팅방 검색"
+            placeholder="방 이름이나 설명으로 검색"
             className="w-full h-11 pl-10 pr-4 rounded-xl bg-gray-100 border border-transparent focus:bg-white focus:border-[#3B75E4] outline-none transition text-sm text-gray-900 placeholder:text-gray-400"
           />
         </div>
@@ -82,7 +84,7 @@ export default function DiscoverTab({
         ) : filtered.length === 0 ? (
           <div className="text-center py-16 text-gray-400 text-sm">
             <MessageCircle className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-            {query ? '검색 결과가 없습니다.' : '아직 채팅방이 없습니다. 첫 방을 만들어 보세요!'}
+            {query ? '검색 결과가 없습니다.' : '아직 참여한 채팅방이 없습니다. 검색어를 입력해 다른 방을 찾아보세요!'}
           </div>
         ) : (
           <ul className="space-y-2.5">
@@ -116,7 +118,7 @@ export default function DiscoverTab({
                       입장
                     </button>
                   ) : (
-                    <JoinButton room={room} onJoined={onJoined} />
+                    <JoinButton room={room} onJoined={onJoined} onOpenRoom={onOpenRoom} />
                   )}
                 </div>
               </li>
@@ -146,12 +148,21 @@ export default function DiscoverTab({
   );
 }
 
-function JoinButton({ room, onJoined }: { room: Room; onJoined: (room: Room) => void }) {
+function JoinButton({
+  room,
+  onJoined,
+  onOpenRoom,
+}: {
+  room: Room;
+  onJoined: (room: Room) => void;
+  onOpenRoom: (room: Room) => void;
+}) {
   const [busy, setBusy] = useState(false);
 
   const join = async () => {
     if (room.password) {
-      onJoined(room); // open join flow with password prompt
+      // Route through onOpenRoom so the password prompt (handleRoomClick) is shown.
+      onOpenRoom(room);
       return;
     }
     setBusy(true);
