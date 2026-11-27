@@ -66,7 +66,7 @@ export default function App() {
       </header>
 
       <main className="max-w-md mx-auto">
-        {tab === 'chats' && <ChatsTab onOpenRoom={handleRoomClick} />}
+        {tab === 'chats' && <ChatsTab onOpenRoom={handleRoomClick} onJoined={handleJoined} />}
         {tab === 'discover' && <DiscoverTab onOpenRoom={handleRoomClick} onJoined={handleJoined} />}
         {tab === 'profile' && <ProfileTab onOpenRoom={handleRoomClick} />}
       </main>
