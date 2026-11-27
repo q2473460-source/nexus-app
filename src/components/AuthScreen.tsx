@@ -26,15 +26,17 @@ export default function AuthScreen() {
 
     setLoading(true);
     try {
-      // Clear any stale/corrupted session before fresh auth
-      try {
-        await supabase.auth.signOut();
-      } catch {
-        // ignore — session may already be invalid
-      }
-      for (const key of Object.keys(localStorage)) {
-        if (key.startsWith('sb-') || key.includes('-auth-token')) {
-          localStorage.removeItem(key);
+      if (mode === 'signin') {
+        // Clear any stale/corrupted session before fresh login
+        try {
+          await supabase.auth.signOut();
+        } catch {
+          // ignore — session may already be invalid
+        }
+        for (const key of Object.keys(localStorage)) {
+          if (key.startsWith('sb-') || key.includes('-auth-token')) {
+            localStorage.removeItem(key);
+          }
         }
       }
 

@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase, type Room } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
@@ -18,23 +18,25 @@ export default function DiscoverTab({
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const userIdRef = useRef<string | null>(null);
+  userIdRef.current = user?.id ?? null;
 
   const loadData = useCallback(async () => {
-    setLoading(true);
+    const uid = userIdRef.current;
     const [roomsRes, membersRes] = await Promise.all([
       supabase.from('rooms').select('*').order('created_at', { ascending: false }),
-      user
-        ? supabase.from('room_members').select('room_id').eq('user_id', user.id)
+      uid
+        ? supabase.from('room_members').select('room_id').eq('user_id', uid)
         : Promise.resolve({ data: [] as { room_id: string }[] }),
     ]);
     setRooms((roomsRes.data ?? []) as Room[]);
     setJoinedIds(new Set((membersRes.data ?? []).map((m) => m.room_id)));
     setLoading(false);
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     loadData();
-  }, [loadData]);
+  }, [loadData, user?.id]);
 
   useEffect(() => {
     const channel = supabase
@@ -43,6 +45,13 @@ export default function DiscoverTab({
         'postgres_changes',
         { event: '*', schema: 'public', table: 'rooms' },
         (_payload: RealtimePostgresChangesPayload<Room>) => {
+          loadData();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'room_members' },
+        () => {
           loadData();
         }
       )
@@ -161,7 +170,6 @@ function JoinButton({
 
   const join = async () => {
     if (room.password) {
-      // Route through onOpenRoom so the password prompt (handleRoomClick) is shown.
       onOpenRoom(room);
       return;
     }
